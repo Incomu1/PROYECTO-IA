@@ -1,0 +1,74 @@
+{
+  "semilla": 2026,
+  "semilla_validacion": 2027,
+  "datos": {
+    "filas_leidas": 2075259,
+    "filas_omitidas": 25979,
+    "horas_validas": 34168
+  },
+  "particion": "cronológica 60/20/20",
+  "inyeccion_validacion": {
+    "picos_simulados": 34,
+    "bloques_sostenidos": 14,
+    "horas_por_bloque": 3,
+    "horas_etiquetadas": 76,
+    "factor_pico": 4.0,
+    "aumento_minimo_pico_kw": 1.0,
+    "factor_aumento_sostenido": 2.5,
+    "aumento_minimo_sostenido_kw": 0.5
+  },
+  "inyeccion_prueba": {
+    "picos_simulados": 34,
+    "bloques_sostenidos": 14,
+    "horas_por_bloque": 3,
+    "horas_etiquetadas": 76,
+    "factor_pico": 4.0,
+    "aumento_minimo_pico_kw": 1.0,
+    "factor_aumento_sostenido": 2.5,
+    "aumento_minimo_sostenido_kw": 0.5
+  },
+  "ajuste": {
+    "Isolation Forest": {
+      "contamination": 0.01,
+      "n_estimators": 200
+    },
+    "LOF": {
+      "n_neighbors": 35,
+      "contamination": 0.005,
+      "novelty": true
+    }
+  },
+  "metricas_prueba": {
+    "MAD": {
+      "verdaderos_positivos": 35,
+      "falsos_positivos": 65,
+      "falsos_negativos": 41,
+      "precision": 0.35,
+      "recall": 0.4605263157894737,
+      "f1": 0.39772727272727265
+    },
+    "Isolation Forest": {
+      "verdaderos_positivos": 30,
+      "falsos_positivos": 16,
+      "falsos_negativos": 46,
+      "precision": 0.6521739130434783,
+      "recall": 0.39473684210526316,
+      "f1": 0.49180327868852464
+    },
+    "LOF": {
+      "verdaderos_positivos": 21,
+      "falsos_positivos": 30,
+      "falsos_negativos": 55,
+      "precision": 0.4117647058823529,
+      "recall": 0.27631578947368424,
+      "f1": 0.33070866141732286
+    }
+  },
+  "meta_hito1": {
+    "f1_objetivo": 0.8,
+    "mejora_minima_sobre_mad": 0.05,
+    "cumple_f1": false,
+    "cumple_mejora": true
+  },
+  "limite": "Etiquetas sintéticas, no verdad-terreno de anomalías reales; un único hogar de Francia."
+}

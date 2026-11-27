@@ -1,0 +1,11 @@
+modelo,indice_prueba,hora_serie,tipo,etiqueta_sintetica,prediccion,consumo_kW,causa_probable
+MAD,287,27621,falso negativo,True,False,1.63813,El aumento simulado puede solaparse con picos de consumo habituales.
+MAD,37,27371,falso positivo,False,True,3.87743,La variación natural del hogar puede parecerse a una inyección.
+Isolation Forest,287,27621,falso negativo,True,False,1.63813,El aumento simulado puede solaparse con picos de consumo habituales.
+Isolation Forest,295,27629,falso positivo,False,True,4.05993,La variación natural del hogar puede parecerse a una inyección.
+LOF,287,27621,falso negativo,True,False,1.63813,El aumento simulado puede solaparse con picos de consumo habituales.
+LOF,102,27436,falso positivo,False,True,1.50673,La variación natural del hogar puede parecerse a una inyección.
+MAD,38,27372,falso positivo,False,True,3.84,La variación natural del hogar puede parecerse a una inyección.
+MAD,42,27376,falso positivo,False,True,3.4749,La variación natural del hogar puede parecerse a una inyección.
+MAD,110,27444,falso positivo,False,True,3.5046,La variación natural del hogar puede parecerse a una inyección.
+MAD,199,27533,falso positivo,False,True,3.92413,La variación natural del hogar puede parecerse a una inyección.

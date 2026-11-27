@@ -1,0 +1,167 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1.65cm,columnsep=0.58cm]{geometry}
+\usepackage{array}
+\newcommand{\url}[1]{\texttt{#1}}
+
+\linespread{1.18}
+\setlength{\parindent}{1em}\setlength{\parskip}{2pt}
+\title{Detección exploratoria de consumos eléctricos inusuales mediante métodos no supervisados}
+\author{Eli Bautista Welman Amaya\\Asignatura: Inteligencia Artificial}
+\date{2026}
+\begin{document}\maketitle
+\begin{abstract}
+Este trabajo compara tres estrategias para señalar lecturas horarias inusuales de consumo eléctrico: una regla robusta basada en mediana y desviación absoluta mediana (MAD), Isolation Forest y Local Outlier Factor (LOF). Se agregaron a horas 2.075.259 registros de un hogar de Sceaux, Francia, publicados por UCI; 25.979 filas con valores faltantes se omitieron. La serie se separó cronológicamente en entrenamiento, validación y prueba (60/20/20). Debido a que la fuente no tiene etiquetas de anomalía, se añadieron picos y aumentos sostenidos artificiales a validación y prueba. En esta prueba sintética, Isolation Forest obtuvo F1=0,492, frente a 0,398 de MAD y 0,331 de LOF. La mejora de Isolation Forest sobre MAD fue 0,094, pero ninguno llegó a la meta F1=0,80. Estos resultados permiten comparar el comportamiento ante las alteraciones diseñadas, no certificar detección de fallas reales ni generalización a hogares de Colombia. Se entrega un prototipo de línea de comandos y un procedimiento reproducible.
+\end{abstract}
+\noindent\textbf{Palabras clave—} detección de anomalías, consumo eléctrico, Isolation Forest, LOF, evaluación sintética.
+
+\section{Introducción}
+Un cambio inusual en el consumo puede motivar una revisión del medidor o de los equipos de una vivienda. Sin etiquetas ni inspección técnica, sin embargo, una alerta no identifica su causa y puede confundir un cambio legítimo de rutina con una falla. El usuario potencial es una persona que revisa su propio historial de consumo; el sistema propuesto solo prioriza lecturas para revisión, no recomienda desconexiones ni reemplaza a un profesional.
+
+La pregunta de trabajo es: \emph{¿alguno de dos métodos no supervisados mejora, en una prueba controlada con alteraciones sintéticas, la línea base MAD y alcanza F1 de 0,80?} La comparación es deliberadamente acotada: el conjunto de UCI corresponde a una sola vivienda en Francia durante 2006–2010, no a Cartagena. El contexto colombiano justificaría el problema energético, pero las estadísticas regionales agregadas no equivalen a un conjunto de lecturas residenciales etiquetadas ni permiten afirmar validez local.
+
+\section{Trabajo relacionado}
+La detección de anomalías busca observaciones que difieren del comportamiento esperado; la revisión de Chandola et al. organiza enfoques estadísticos, basados en vecindad y aprendizaje, y advierte que la definición de anomalía depende del contexto \cite{chandola}. Liu et al. presentan Isolation Forest, que aísla observaciones mediante particiones aleatorias; los puntos aislados en menos particiones tienden a recibir puntuaciones más anómalas \cite{liu}. Breunig et al. definen LOF a partir de densidad local relativa, lo cual puede encontrar puntos atípicos respecto de su vecindad \cite{breunig}. Ambas técnicas son pertinentes cuando no se dispone de etiquetas, aunque sus puntuaciones y umbrales requieren decisiones explícitas.
+
+El libro guía describe agentes racionales como sistemas que perciben el entorno y seleccionan acciones según una medida de desempeño; también destaca que la elección del método depende del problema y de la evidencia disponible \cite{russell}. Para esta aplicación se restringen las acciones a emitir una señal explicable. Como antecedente contextual, UPME publica proyecciones agregadas de demanda eléctrica por sector y región \cite{upme}; estas cifras no se usan para entrenar ni validar el detector.
+
+\section{Formulación del problema}
+El sistema se formula como un agente de monitoreo con observaciones horarias y acción de alerta. Su objetivo experimental es identificar puntos alterados artificialmente. El entorno es parcialmente observable (solo se conoce potencia activa agregada), estocástico (variaciones de uso), secuencial (lecturas ordenadas en el tiempo), dinámico y de un solo agente.
+
+\begin{table}[h]
+\centering\small
+\caption{Descripción PEAS}
+\begin{tabular}{p{0.72cm}p{5.4cm}}
+\hline
+P & Señalar posibles lecturas inusuales; reducir omisiones sin generar demasiadas alertas falsas.\\
+E & Serie horaria de una vivienda y registros descargados de UCI; no incluye contexto de ocupantes ni etiquetas reales.\\
+A & Emitir «posible valor inusual» o «sin alerta» en el prototipo CLI.\\
+S & Lectura horaria, hora en la secuencia y etiquetas sintéticas para evaluación; F1, precisión, recall y matriz de confusión.\\
+\hline
+\end{tabular}\end{table}
+
+Formalmente, dado el conjunto de entrenamiento $X_{tr}$, cada método estima una puntuación $s(x)$ y emite alerta cuando $s(x)$ supera un umbral. MAD utiliza $|x-\mathrm{mediana}(X_{tr})|$; Isolation Forest usa la puntuación inversa de aislamiento; LOF calcula rareza local. Para las métricas binarias, las etiquetas positivas son exclusivamente las inyecciones definidas en este trabajo. Se considera éxito conjunto alcanzar F1 $\geq 0,80$ y superar MAD en al menos 0,05.
+
+\section{Datos y preparación}
+La fuente es \emph{Individual Household Electric Power Consumption}, UCI Machine Learning Repository, bajo licencia CC BY 4.0 \cite{uci}. Tiene 2.075.259 mediciones de un minuto y nueve variables, recogidas en una vivienda en Sceaux, Francia, entre diciembre de 2006 y noviembre de 2010. Se leyó \texttt{Global\_active\_power} en kW, se promediaron mediciones válidas por hora y se descartaron filas sin potencia o fecha válida: 25.979 omitidas y 34.168 horas resultantes.
+
+La partición preserva orden: 60\% entrenamiento (20.500 horas), 20\% validación (6.834) y 20\% prueba (6.834). Los modelos se ajustan sobre entrenamiento sin contaminación sintética. La validación contiene 34 picos y 14 bloques de tres horas (76 lecturas etiquetadas); la prueba se genera aparte con otra semilla y la misma receta. Los picos se multiplican por cuatro o aumentan al menos 1 kW; los bloques se multiplican por 2,5 o aumentan al menos 0,5 kW. Son perturbaciones controladas y no casos observados de fraude o fallo. El archivo bruto se descarga mediante script y no se incluye en Git por tamaño; se conserva su fuente y licencia.
+
+\section{Método y arquitectura}
+La línea base calcula mediana y MAD solo en entrenamiento, usando umbral mediana $\pm 3(1,4826\times MAD)$. Si MAD es cero, el código aplica IQR/1,349 y, para serie constante, un epsilon para evitar división por cero.
+
+Para comparar modelos se construyen tres atributos por hora: consumo, diferencia frente a la hora anterior y diferencia frente a una mediana móvil de hasta cuatro horas. Isolation Forest usa 200 árboles, semilla 2026, y se ajusta la contaminación en $\{0,005;0,01;0,02;0,05;0,1\}$. Para LOF se prueban 10, 20, 35 o 50 vecinos y las mismas tasas; se usa \texttt{novelty=True}, para ajustar en entrenamiento y puntuar observaciones nuevas. Los parámetros se eligen por F1 en validación sintética y se congelan antes de la prueba. No se usa el conjunto de prueba para seleccionar configuración.
+
+La arquitectura es: archivo fuente → agregación horaria → división temporal → ajuste con entrenamiento → selección en validación → predicción en prueba alterada → métricas y casos de error en JSON/CSV. El script reproducible está en \texttt{src/experimento\_modelos.py}; el prototipo CLI en \texttt{src/prototipo.py}. El costo es local y no requiere API paga. NumPy y scikit-learn tienen versiones fijadas en \texttt{requirements.txt}.
+
+\section{Experimentos y resultados}
+Se ejecutó una corrida controlada con semilla de prueba 2026 y semilla de validación 2027. La tabla resume el conjunto de prueba (76 alteraciones sintéticas). La matriz de confusión se expresa como verdaderos positivos (VP), falsos positivos (FP) y falsos negativos (FN); los verdaderos negativos se obtienen como 6.758 menos FP.
+\begin{table}[h]
+\centering\small\caption{Resultados en prueba sintética}
+\begin{tabular}{lrrrrrr}
+\hline
+Método & VP & FP & FN & Prec. & Recall & F1\\
+\hline
+MAD &35&65&41&0,350&0,461&0,398\\
+Isolation Forest&30&16&46&0,652&0,395&0,492\\
+LOF&21&30&55&0,412&0,276&0,331\\
+\hline
+\end{tabular}\end{table}
+
+Isolation Forest mejora F1 de MAD en 0,094, pero queda 0,332 por debajo de la meta 0,80. Su precisión aumenta y su recall disminuye: genera menos falsas alarmas, a costa de dejar pasar más inyecciones. LOF no supera la línea base. Esta comparación refleja los atributos, inyecciones y una partición temporal concreta; no demuestra superioridad general. La tasa de inyección y el solapamiento con patrones normales condicionan el F1. No se reporta validación cruzada porque mezclar ventanas temporales produciría una evaluación menos representativa del uso secuencial.
+
+\section{Análisis de errores}
+El CSV reproducible guarda diez errores concretos seleccionados de los modelos: falsos negativos de inyecciones y falsos positivos sobre observaciones no modificadas. Entre ellos, una misma alteración de 1,63813 kW queda sin detectar por los tres métodos; la magnitud puede parecer habitual frente al patrón aprendido. Entre los falsos positivos de MAD aparecen lecturas de 3,87743 y 3,84000 kW: la variación legítima del hogar puede superar el umbral global. Los errores están clasificados por tipo y llevan una hipótesis causal en \texttt{experiments/errores.csv}.
+
+La hipótesis de falsos negativos es que algunas inyecciones moderadas se solapan con variabilidad cotidiana o con el umbral elegido; los falsos positivos pueden ser cambios legítimos de actividad, estacionalidad o picos que el modelo no contextualiza. Las causas son plausibles, no comprobadas: el conjunto carece de anotaciones y contexto de ocupación. El reporte de diez filas no equivale a diez tipos independientes de falla, y se explicita esta limitación.
+
+\section{Discusión de las decisiones de diseño}
+La agregación horaria responde a una decisión de alcance: reducir más de dos millones de mediciones a una serie que pueda inspeccionarse y ejecutar en un equipo personal. Este promedio suaviza picos breves; por ello, una sobrecarga de pocos minutos puede desaparecer dentro de una hora. Una futura versión podría conservar máximos y cuantiles por hora, pero no se añadieron después de observar los resultados para evitar escoger atributos en función de la prueba.
+
+La división cronológica intenta imitar el uso futuro: el detector se ajusta con el pasado, se selecciona usando el segmento siguiente y se mide al final. Una partición aleatoria podría situar horas muy cercanas de un mismo episodio a ambos lados de la frontera y dar una estimación optimista. Aun con orden temporal, el conjunto incluye estaciones y cambios de rutina; una mediana global no modela esos ciclos. Por eso las conclusiones se limitan a este segmento y no afirman que la regla se mantendría estable con otro calendario.
+
+MAD se conserva como línea base porque es simple, interpretable y no depende de entrenamiento iterativo. Su umbral se puede explicar directamente en función del centro y dispersión robusta. La alternativa de un clasificador mayoritario no es útil aquí: sin etiquetas reales, siempre predecir “normal” puede dar alta exactitud por el desbalance, pero no detecta ninguna inyección. Se prefiere reportar precisión, recall y F1, acompañados por la matriz de confusión.
+
+Isolation Forest fue elegido porque modela rareza mediante aislamiento sin asumir una distribución paramétrica. LOF aporta una comparación basada en densidad local y puede distinguir desviaciones dentro de grupos densos. La limitación de ambos es que dependen de atributos y umbrales; “no supervisado” no significa libre de decisiones. La tasa de contaminación controla el corte aprendido durante el ajuste; se eligió en validación con el mismo umbral congelado y no se recalculó sobre la prueba. En una instalación con incidentes reales, se debería escoger el umbral según el costo de cada tipo de error con usuarios y técnicos, no maximizar F1 de inyecciones artificiales.
+
+\section{Detalle de errores observados}
+La tabla enumera diez registros incluidos en el archivo de errores. Algunos corresponden a diferentes modelos evaluando la misma hora; se presentan por modelo para que el resultado sea rastreable y no se cuenten como diez episodios independientes. La columna de consumo se refiere a la serie ya perturbada para la prueba. El índice es local a la partición de prueba.
+\begin{table*}[t]
+\centering\scriptsize
+\caption{Diez errores seleccionados del CSV de experimento}
+\begin{tabular}{rllrrp{7.7cm}}
+\hline
+Caso & Método & Tipo & índice & kW & Hipótesis de causa\\\hline
+1 & MAD & FN & 287 & 1,63813 & El incremento simulado pudo permanecer dentro del umbral global.\\
+2 & MAD & FP & 37 & 3,87743 & Una subida legítima puede superar el límite robusto entrenado.\\
+3 & IF & FN & 287 & 1,63813 & La forma local de la alteración quizá no quedó aislada en suficientes árboles.\\
+4 & IF & FP & 295 & 4,05993 & Un valor alto no inyectado pudo parecer aislado frente a los atributos del entrenamiento.\\
+5 & LOF & FN & 287 & 1,63813 & El aumento se pudo parecer a una región densa de consumo elevado.\\
+6 & LOF & FP & 102 & 1,50673 & La diferencia entre horas o frente a la mediana móvil pudo ser rara localmente.\\
+7 & MAD & FP & 38 & 3,84000 & Una lectura normal cercana en el tiempo al caso anterior supera el umbral global.\\
+8 & MAD & FP & 42 & 3,47490 & La variabilidad observada puede ser normal para este hogar, aunque MAD la marque.\\
+9 & MAD & FP & 110 & 3,50460 & El umbral ignora hora del día, calendario y contexto de uso.\\
+10 & MAD & FP & 199 & 3,92413 & El patrón de entrenamiento no contiene contexto suficiente para explicar este pico.\\\hline
+\end{tabular}
+\end{table*}
+
+La concentración de falsos positivos en MAD muestra el costo de una regla de umbral simple en esta configuración; no significa necesariamente que los otros modelos sean mejores para una vivienda real. El falso negativo repetido en tres métodos sugiere que la magnitud y contexto de ciertas alteraciones son difíciles de separar con estas variables. La salida de errores no incluye explicaciones causales verificadas, ni etiqueta cada lectura original como normal en sentido físico: “no modificada” describe únicamente cómo se construyó el benchmark.
+
+\section{Reproducibilidad y demostración}
+El repositorio contiene la descarga del conjunto, el código de agregación de Hito 2, el experimento comparativo, un CLI, las pruebas automatizadas, la bitácora y los archivos generados. Para repetir la comparación se fijan versiones de NumPy y scikit-learn y se utiliza la semilla 2026 para prueba y 2027 para validación. Isolation Forest además recibe semilla 2026. La configuración elegida por validación queda registrada en el JSON; las métricas y los casos pueden inspeccionarse sin regenerar la redacción del informe.
+
+Las nueve pruebas unitarias cubren umbrales MAD, respaldo cuando MAD es cero, inyección determinista, lectura y agregación, cálculo de métricas, dimensiones de características y salida del prototipo. El flujo de experimentación toma menos de diez segundos en el equipo de desarrollo al momento de la ejecución. La descarga requiere acceso a internet únicamente para obtener la fuente pública; el entrenamiento y la evaluación se ejecutan localmente sin llamadas a un servicio remoto.
+
+En la demostración, el docente puede cambiar el consumo ingresado; por ejemplo: \texttt{python3 -m src.prototipo --consumo 3.5 --modelo iforest}. En la ejecución de control, el CLI respondió “sin alerta” e incluyó una advertencia que restringe su interpretación. El resultado puntual depende del entrenamiento disponible y no afirma que 3,5 kW sea un consumo normal universal. Para comparar alternativas se sustituye el argumento por \texttt{mad} o \texttt{lof}. El script no acciona dispositivos ni requiere credenciales.
+
+\section{Umbral de éxito y lectura de métricas}
+F1 es la media armónica de precisión y recall. La precisión responde qué proporción de alertas emitidas coincide con las alteraciones etiquetadas; el recall, qué parte de alteraciones detecta el modelo. Una métrica alta aislada sería incompleta: un detector que alerta mucho podría elevar recall y generar interrupciones; uno que casi nunca alerta puede parecer preciso mientras omite casos. La evaluación informa ambos componentes y sus conteos.
+
+La regla acordada antes de experimentar exige simultáneamente F1 de al menos 0,80 y ganancia mínima de 0,05 respecto a MAD. En esta corrida, Isolation Forest logra la ganancia de 0,094, pero su F1=0,492 incumple el primer umbral. LOF no cumple ninguno de esos objetivos comparativos. Esto no debe reescribirse como “el proyecto alcanzó la meta”: el resultado es parcial y negativo respecto al criterio absoluto. Cambiar umbral o porcentaje de inyección para subir F1 después de ver test sería fuga de evaluación; cualquier nuevo experimento debe definirse antes y quedar identificado como tal.
+
+Los porcentajes se reportan con tres decimales para precisión y recall, y tres para F1. El JSON conserva mayor precisión. Se recomienda leer la tabla como un resumen de una sola semilla, no como una estimación estable; diferencias pequeñas podrían invertirse en otra inyección. La distribución de predicciones y métricas por semilla sería necesaria para intervalos de incertidumbre, y debe incorporarse antes de presentar recomendaciones de operación.
+
+\section{IA responsable y limitaciones}
+\textbf{Representatividad.} Una única vivienda francesa no representa hogares de Cartagena; la edad de los datos y diferencias de clima, equipos, tarifas y rutinas limitan la transferencia. Antes de uso local se requerirían datos autorizados, anonimizados y representativos, con evaluación por hogares y zonas.
+
+\textbf{Privacidad.} Los perfiles horarios pueden revelar rutinas. Una implementación real minimizaría resolución, retendría datos el menor tiempo posible, cifraría almacenamiento y limitaría accesos. Este proyecto no contiene identidad de ocupantes y no intenta inferirla.
+
+\textbf{Seguridad y uso indebido.} Una alerta automática podría causar preocupación o desconexiones innecesarias. La salida se presenta como indicio, requiere revisión humana y no se conecta a controles de suministro. No debe emplearse para sancionar, perfilar o tomar decisiones sobre personas.
+
+\textbf{Limitaciones técnicas.} Las etiquetas son sintéticas; no hay verdad-terreno real. La inyección multiplica consumo y puede producir patrones artificiales; los métodos univariados con atributos locales no modelan calendario, clima o actividad. El objetivo y la regla de umbral afectan las métricas. La única corrida no estima incertidumbre entre semillas. El prototipo no constituye detector validado ni consejo técnico.
+
+\section{Validez y amenazas a la interpretación}
+La validez de constructo es limitada: una anomalía de consumo no queda definida solo por su magnitud. Un cambio legítimo al instalar un equipo puede ser estadísticamente raro, mientras que una falla gradual puede no producir un salto extremo. En el experimento la definición operacional de “positivo” es la receta de inyección. Por tanto, el sistema aprende la diferencia entre observaciones modificadas y no modificadas, no la diferencia entre fallas y comportamientos correctos.
+
+La validez interna puede verse afectada por que la inyección agrega directamente potencia a la serie horaria después de calcular el promedio; esto no representa necesariamente cómo se comporta un medidor ante un evento real. Además, la regla para elegir contaminación maximiza F1 en una validación con la misma familia de perturbaciones de prueba. Aunque cambia la semilla e índices, el escenario no es completamente independiente en términos de mecanismo generador. Este diseño favorece comparar métodos dentro de una prueba reproducible, pero no medir un desempeño poblacional.
+
+La validez externa es especialmente débil porque hay una sola vivienda, un país distinto y un período histórico. Los electrodomésticos, hábitos, condiciones climáticas, tarifas y calidad del suministro pueden cambiar el patrón. La frecuencia horaria descarta variación intrahoraria. No se midió estabilidad ante cambios de estación o años, ni desempeño por tipo de hogar, estrato o región. No hay datos suficientes para estimar brechas por subgrupo; afirmar que el modelo es justo o equitativo sería infundado.
+
+La validez estadística también está limitada por una sola configuración de semilla y por el pequeño número de positivos sintéticos. Una diferencia de algunos aciertos altera de forma visible el recall. Los resultados no incluyen intervalos de confianza. Una extensión correcta mantendría prueba sellada, haría múltiples pruebas predefinidas con semillas distintas y resumiría promedio, dispersión y matrices de confusión, procurando no reutilizar el test para reajustar parámetros. Las unidades temporales adyacentes tampoco son independientes: un bloque de tres horas constituye un episodio, no tres eventos separados para interpretar intervalos estadísticos.
+
+\section{Riesgos por grupo y mitigaciones propuestas}
+Si se adaptara el sistema a una plataforma de monitoreo, los usuarios con equipos intensivos o rutinas atípicas podrían recibir más alertas. En hogares con miembros que dependen de dispositivos médicos o equipos de refrigeración, una recomendación automática de desconectar carga tendría impacto potencialmente grave. Por eso se excluye toda acción automática y se propone que las alertas sean informativas, revisables y acompañadas por datos de contexto que el propio usuario pueda confirmar.
+
+Un servicio comercial podría usar perfiles de consumo para inferir presencia o hábitos, aunque el propósito inicial fuera detectar fallas. La mitigación no es solamente quitar nombres: una serie temporal puede ser identificable al combinarse con horarios y ubicación. El prototipo actual evita almacenar perfiles nuevos, no exporta lecturas y no incluye inferencias sobre ocupantes. En una ampliación se debería definir finalidad, consentimiento, minimización, plazo de retención, control de acceso y mecanismo de eliminación, y revisar la normativa aplicable con la institución responsable.
+
+Los falsos positivos pueden desgastar la confianza del usuario y ocasionar llamadas técnicas innecesarias; los falsos negativos pueden retrasar una revisión. El umbral debe seleccionarse con el costo de cada error y la capacidad humana de atención. Un tablero debería separar “observación estadísticamente atípica” de “falla confirmada”, mostrar el período de referencia y permitir que un técnico cierre la revisión como explicada, no explicada o pendiente. Estas anotaciones, si se recolectaran, requieren autorización y un proceso de calidad antes de convertirse en etiquetas.
+
+Existe también riesgo de uso indebido si se convierten las alertas en mecanismos de vigilancia o sanción de clientes. El uso propuesto se limita a apoyo exploratorio al titular o al personal técnico autorizado; no se permite inferir ocupación, imponer tarifas, restringir el servicio ni evaluar conducta individual. Las limitaciones deben acompañar la pantalla y no quedar solo en este informe. Las medidas sugeridas son preventivas: no fueron validadas mediante evaluación con usuarios ni constituyen certificación de seguridad.
+
+\section{Conclusiones}
+En la prueba sintética, Isolation Forest logró F1=0,492 y mejoró MAD por 0,094, mientras LOF obtuvo 0,331. La meta F1=0,80 no se alcanzó. Por tanto, la respuesta a la pregunta es parcial: Isolation Forest superó el margen comparativo solicitado en este escenario artificial, pero no demostró precisión suficiente ni capacidad para detectar anomalías reales. Un trabajo futuro debería obtener etiquetas revisadas por expertos, repetir corridas con varias semillas, evaluar estabilidad temporal y estudiar datos residenciales colombianos con autorización.
+
+\section*{Contribución y uso de IA generativa}
+Este proyecto lo desarrollé de manera individual. Yo formulé el problema y revisé el código y los resultados; asumo la responsabilidad de explicar y defender el trabajo. Utilicé ChatGPT como apoyo para organizar ideas, programar, documentar y redactar. Verifiqué las métricas ejecutando los scripts y contrastándolas con los archivos del experimento. Durante las pruebas, encontré una llamada incorrecta a \texttt{.tolist()} sobre una lista de Python y la corregí con apoyo del asistente. También revisé el umbral de Isolation Forest y LOF: la primera versión lo recalculaba con los datos evaluados, lo que podía filtrar información de prueba. Ajusté el código para que el corte quedara fijado durante el entrenamiento y añadí una prueba para comprobarlo.
+
+\clearpage
+\begin{thebibliography}{9}\small
+\bibitem{uci} D. Dua y C. Graff, ``Individual Household Electric Power Consumption,'' UCI Machine Learning Repository, 2012, doi: 10.24432/C58K54. [En línea]. Disponible: \url{https://archive.ics.uci.edu/dataset/235/individual+household+electric+power+consumption}.
+\bibitem{liu} F. T. Liu, K. M. Ting y Z.-H. Zhou, ``Isolation Forest,'' en \emph{Proc. IEEE International Conference on Data Mining}, 2008, pp. 413–422, doi: 10.1109/ICDM.2008.17.
+\bibitem{breunig} M. M. Breunig, H.-P. Kriegel, R. T. Ng y J. Sander, ``LOF: Identifying Density-Based Local Outliers,'' en \emph{Proc. ACM SIGMOD}, 2000, pp. 93–104, doi: 10.1145/342009.335388.
+\bibitem{chandola} V. Chandola, A. Banerjee y V. Kumar, ``Anomaly Detection: A Survey,'' \emph{ACM Computing Surveys}, vol. 41, no. 3, art. 15, 2009, doi: 10.1145/1541880.1541882.
+\bibitem{russell} S. Russell y P. Norvig, \emph{Artificial Intelligence: A Modern Approach}, 4th ed. Hoboken, NJ: Pearson, 2021.
+\bibitem{upme} Unidad de Planeación Minero Energética, ``Informe de proyección de demanda de energía eléctrica y potencia máxima, revisión dic. 2024. [En línea]. Disponible: \url{https:/\allowbreak/\allowbreak docs.upme.gov.co/\allowbreak DemandayEficiencia/\allowbreak Documents/\allowbreak Informe\_\allowbreak de\_\allowbreak proyeccion\_\allowbreak de\_\allowbreak demanda\_\allowbreak de\_\allowbreak energia\_\allowbreak electrica\_\allowbreak y\_\allowbreak potencia\_\allowbreak maxima\_\allowbreak Rev\_\allowbreak dic2024.pdf}.
+\end{thebibliography}
+\end{document}

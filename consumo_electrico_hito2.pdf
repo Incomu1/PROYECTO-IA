@@ -1,0 +1,138 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 7 0 R >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 8 0 R >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+7 0 obj
+<< /Length 4348 >>
+stream
+BT /F2 18.0 Tf 1 0 0 1 48.0 796.9 Tm (Hito 2 | Avance del proyecto) Tj ET
+BT /F2 9.4 Tf 1 0 0 1 48.0 775.9 Tm (Proyecto: Identificación de consumos eléctricos inusuales en un hogar) Tj ET
+BT /F1 9.1 Tf 1 0 0 1 48.0 761.9 Tm (Estudiante: Eli Bautista Welman Amaya   |   Curso: Inteligencia artificial) Tj ET
+0.85 w 48.0 754.9 m 547.3 754.9 l S
+BT /F2 11.1 Tf 1 0 0 1 48.0 738.9 Tm (Datos listos) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 723.9 Tm (Se preparó Individual Household Electric Power Consumption, del repositorio UCI: 2.075.259) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 711.9 Tm (mediciones por minuto de una vivienda en Francia \(2006–2010\), con licencia CC BY 4.0. Se usó) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 699.9 Tm (Global_active_power, se calcularon promedios por hora y se omitieron registros sin consumo válido.) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 687.9 Tm (De 34.168 horas válidas, la partición cronológica dejó 20.500 para entrenamiento, 6.834 para) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 675.9 Tm (validación y 6.834 para prueba.) Tj ET
+BT /F2 11.1 Tf 1 0 0 1 48.0 660.9 Tm (Línea base ejecutándose) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 645.9 Tm (La primera referencia es una regla robusta basada en la mediana y la desviación absoluta mediana) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 633.9 Tm (\(MAD\). Los umbrales se calcularon solo con entrenamiento: mediana ± 3 × 1,4826 × MAD. El) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 621.9 Tm (experimento usa semilla fija \(2026\) y genera anomalías simuladas únicamente en la prueba.) Tj ET
+BT /F2 11.1 Tf 1 0 0 1 48.0 606.9 Tm (Primer resultado) Tj ET
+0.45 w 48.0 594.9 m 48.0 547.9 l S
+0.45 w 119.3 594.9 m 119.3 547.9 l S
+0.45 w 190.7 594.9 m 190.7 547.9 l S
+0.45 w 262.0 594.9 m 262.0 547.9 l S
+0.45 w 333.3 594.9 m 333.3 547.9 l S
+0.45 w 404.6 594.9 m 404.6 547.9 l S
+0.45 w 476.0 594.9 m 476.0 547.9 l S
+0.45 w 547.3 594.9 m 547.3 547.9 l S
+0.55 w 48.0 594.9 m 547.3 594.9 l S
+0.45 w 48.0 567.9 m 547.3 567.9 l S
+0.55 w 48.0 547.9 m 547.3 547.9 l S
+BT /F2 7.3 Tf 1 0 0 1 51.0 584.9 Tm (Casos) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 51.0 575.9 Tm (simulados) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 51.0 554.9 Tm (76 horas) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 122.3 584.9 Tm (Verdaderos) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 122.3 575.9 Tm (positivos) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 122.3 554.9 Tm (35) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 193.7 584.9 Tm (Falsos) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 193.7 575.9 Tm (positivos) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 193.7 554.9 Tm (65) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 265.0 584.9 Tm (Falsos) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 265.0 575.9 Tm (negativos) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 265.0 554.9 Tm (41) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 336.3 584.9 Tm (Precisión) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 336.3 554.9 Tm (0,350) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 407.6 584.9 Tm (Recall) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 407.6 554.9 Tm (0,461) Tj ET
+BT /F2 7.3 Tf 1 0 0 1 479.0 584.9 Tm (F1) Tj ET
+BT /F1 8.3 Tf 1 0 0 1 479.0 554.9 Tm (0,398) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 534.9 Tm (Las seis pruebas unitarias pasan. El resultado reproducible está guardado en) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 522.9 Tm (experiments/resultado_linea_base.json.) Tj ET
+BT /F2 11.1 Tf 1 0 0 1 48.0 507.9 Tm (Qué significa y qué sigue) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 492.9 Tm (La línea base no alcanza la meta propuesta en el Hito 1 \(F1 mayor o igual a 0,80\), así que no se) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 480.9 Tm (presenta como una solución lograda. UCI no trae etiquetas de anomalías: este resultado mide solo) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 468.9 Tm (casos artificiales y no demuestra que se detecten fallas reales ni que el método funcione en) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 456.9 Tm (hogares de Cartagena. El siguiente paso es revisar falsos positivos y negativos y comparar) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 444.9 Tm (Isolation Forest y Local Outlier Factor con la misma partición y métricas.) Tj ET
+0.65 w 48.0 429.9 m 547.3 429.9 l S
+BT /F2 8.0 Tf 1 0 0 1 48.0 417.9 Tm (Para reproducir:) Tj ET
+BT /F1 7.8 Tf 1 0 0 1 48.0 407.9 Tm (python3 scripts/descargar_datos.py) Tj ET
+BT /F1 7.8 Tf 1 0 0 1 48.0 398.9 Tm (python3 -m unittest discover -s tests -v) Tj ET
+BT /F1 7.8 Tf 1 0 0 1 48.0 389.9 Tm (python3 src/linea_base.py) Tj ET
+BT /F1 7.5 Tf 1 0 0 1 48.0 378.9 Tm (Fuente: Hebrail y Berard, Individual Household Electric Power Consumption, UCI, CC BY 4.0. DOI: 10.24432/C58K54.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Length 2931 >>
+stream
+BT /F2 18.0 Tf 1 0 0 1 48.0 796.9 Tm (Hito 2 | Bitácora de uso de IA) Tj ET
+BT /F1 9.3 Tf 1 0 0 1 48.0 774.9 Tm (Integrante: Eli Bautista Welman Amaya   |   Herramienta: ChatGPT) Tj ET
+0.85 w 48.0 765.9 m 547.3 765.9 l S
+BT /F1 9.4 Tf 1 0 0 1 48.0 750.9 Tm (Este registro resume los usos relevantes del asistente. La decisión final, revisión y) Tj ET
+BT /F1 9.4 Tf 1 0 0 1 48.0 737.9 Tm (explicación del proyecto corresponden a la estudiante.) Tj ET
+0.55 w 48.0 720.9 m 547.3 720.9 l S
+BT /F2 11.2 Tf 1 0 0 1 48.0 705.9 Tm (7 de noviembre de 2026 | Hito 1) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 690.9 Tm (Uso:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 678.9 Tm (Explorar un tema y preparar el borrador sobre detección de consumos eléctricos inusuales.) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 664.5 Tm (Decisiones:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 652.5 Tm (Se aceptó el tema; se revisó la explicación de los datos, las métricas y sus límites. El texto) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 641.1 Tm (se ajustó para explicar los términos con claridad.) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 626.7 Tm (Verificación:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 614.7 Tm (Se contrastó el contenido con la pauta del curso y la ficha y licencia del conjunto UCI.) Tj ET
+0.55 w 48.0 596.3 m 547.3 596.3 l S
+BT /F2 11.2 Tf 1 0 0 1 48.0 581.3 Tm (16 de noviembre de 2026 | Línea base) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 566.3 Tm (Uso:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 554.3 Tm (Apoyar el diseño del script MAD, las pruebas y las instrucciones para reproducirlo.) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 539.9 Tm (Decisiones:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 527.9 Tm (Se aceptó una implementación sin dependencias externas y se limitó la evaluación a anomalías) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 516.5 Tm (simuladas. Se descartó presentar las cifras como detección de anomalías reales.) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 502.1 Tm (Verificación:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 490.1 Tm (Se ejecutaron las seis pruebas unitarias y el script de línea base. Se revisó el JSON con) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 478.7 Tm (semilla 2026.) Tj ET
+0.55 w 48.0 460.3 m 547.3 460.3 l S
+BT /F2 11.2 Tf 1 0 0 1 48.0 445.3 Tm (16 de noviembre de 2026 | Hito 2) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 430.3 Tm (Uso:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 418.3 Tm (Organizar el avance en una página y completar esta bitácora.) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 403.9 Tm (Decisiones:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 391.9 Tm (Se incorporaron resultados observados, la comparación con la meta F1 mayor o igual a 0,80 y la) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 380.5 Tm (limitación de etiquetas sintéticas. No se afirmó que la meta estuviera cumplida ni que se) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 369.1 Tm (detectaran anomalías reales.) Tj ET
+BT /F2 9.1 Tf 1 0 0 1 48.0 354.7 Tm (Verificación:) Tj ET
+BT /F1 9.0 Tf 1 0 0 1 48.0 342.7 Tm (Se compararon los resultados con el JSON generado por el experimento.) Tj ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000269 00000 n 
+0000000411 00000 n 
+0000000508 00000 n 
+0000000610 00000 n 
+0000005009 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+7991
+%%EOF

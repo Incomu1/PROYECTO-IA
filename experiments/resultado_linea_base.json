@@ -1,0 +1,51 @@
+{
+  "experimento": "linea_base_mad_consumo_horario",
+  "fuente": "UCI Individual Household Electric Power Consumption",
+  "semilla": 2026,
+  "preparacion": {
+    "filas_leidas": 2075259,
+    "filas_omitidas": 25979,
+    "horas_validas": 34168,
+    "unidad_temporal": "hora",
+    "variable": "Global_active_power (kW)",
+    "estadistico_hora": "promedio de lecturas válidas",
+    "particion_cronologica": {
+      "entrenamiento_horas": 20500,
+      "validacion_horas": 6834,
+      "prueba_horas": 6834,
+      "porcentajes_aproximados": "60/20/20"
+    }
+  },
+  "linea_base": {
+    "metodo": "mediana ± 3 × 1.4826 × MAD",
+    "mediana": 0.8237833333333333,
+    "mad": 0.5459166666666666,
+    "escala": 0.8093760499999999,
+    "umbral_inferior": -1.6043448166666663,
+    "umbral_superior": 3.251911483333333,
+    "fuente_escala": "MAD",
+    "multiplicador": 3.0,
+    "ajuste_realizado_solo_con": "entrenamiento"
+  },
+  "inyeccion_sintetica_en_prueba": {
+    "picos_simulados": 34,
+    "bloques_sostenidos": 14,
+    "horas_por_bloque": 3,
+    "horas_etiquetadas": 76,
+    "factor_pico": 4.0,
+    "aumento_minimo_pico_kw": 1.0,
+    "factor_aumento_sostenido": 2.5,
+    "aumento_minimo_sostenido_kw": 0.5
+  },
+  "matriz_confusion": {
+    "verdaderos_positivos": 35,
+    "falsos_positivos": 65,
+    "falsos_negativos": 41
+  },
+  "metricas": {
+    "precision": 0.35,
+    "recall": 0.4605263157894737,
+    "f1": 0.39772727272727265
+  },
+  "limite": "Las etiquetas son de anomalías simuladas; las observaciones no modificadas se toman como normales solo para esta prueba, pues UCI no ofrece etiquetas. El resultado no valida anomalías reales ni generalización a otros hogares."
+}
